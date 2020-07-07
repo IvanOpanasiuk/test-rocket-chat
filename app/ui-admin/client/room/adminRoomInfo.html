@@ -1,0 +1,167 @@
+<template name="adminRoomInfo">
+	{{#with selectedRoom}}
+		<section class="contextual-bar__content">
+			<div class="list-view channel-settings">
+				<div class="title">
+					<h2>{{_ "Room_Info"}}</h2>
+				</div>
+				<form>
+					<ul class="list clearfix">
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Avatar"}}</label>
+								<div>
+									<div>
+										{{#if editing 'roomAvatar'}}
+											<div class="rc-select-avatar">
+												<div class="rc-select-avatar__preview">
+													{{# unless newRoomAvatar}}
+														{{> avatar url=roomAvatar}}
+													{{else}}
+														{{#if $eq newRoomAvatar.service 'initials' }}
+															{{> avatar username=initials }}
+														{{else}}
+															{{> avatar url=newRoomAvatar.blob}}
+														{{/if}}
+													{{/unless}}
+												</div>
+												<div class="rc-select-avatar__list">
+													<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-initials" aria-label="{{_ "initials_avatar" }}">
+														{{> avatar username=initials }}
+													</div>
+													<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-upload" aria-label="{{_ "Upload_avatar" }}">
+														<label class="rc-select-avatar__upload-label avatar" for="upload-avatar">
+															{{> icon block="rc-select-avatar__upload-icon" icon="upload"}}
+														</label>
+														<input type="file" name="" value="" id="upload-avatar" style="display:none;" accept="image/x-png,image/gif,image/jpeg">
+													</div>
+													<div class="rc-select-avatar__list-item rc-tooltip js-select-avatar-url {{selectAvatarUrl}}"	aria-label="{{_ "Use_url_for_avatar" }}">
+														<label class="rc-select-avatar__upload-label avatar">
+															{{> icon block="rc-select-avatar__upload-icon" icon="permalink"}}
+														</label>
+													</div>
+													<div class="rc-input">
+														<label class="rc-input__label">
+															<div class="rc-input__title">{{_ "Use_url_for_avatar"}}</div>
+															<div class="rc-input__wrapper">
+																<input name="avatar_url" class="rc-input__element js-avatar-url-input" placeholder="{{_ "Use_url_for_avatar"}}">
+															</div>
+														</label>
+													</div>
+												</div>
+											</div>
+											<div style="margin-top: 0.5rem;">
+												<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+												<button type="button" class="button primary save">{{_ "Save"}}</button>
+											</div>
+										{{else}}
+											<div class="rc-select-avatar">
+												<div id="admin-room-avatar-preview" class="rc-select-avatar__preview">
+													{{> avatar url=roomAvatar}}
+												</div>
+												{{#if notDiscussion}}
+													{{#if canEdit}}
+													<div>
+														<i class="icon-pencil" data-edit="roomAvatar"></i>
+													</div>
+													{{/if}}
+												{{/if}}
+											</div>
+										{{/if}}
+									</div>
+								</div>
+							</li>
+						{{/if}}
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Name"}}</label>
+								<div>
+									{{#if editing 'roomName'}}
+										<input type="text" name="roomName" value="{{roomName}}" class="content-background-color editing" />
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span>{{roomName}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomName"></i>{{/if}}</span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+						{{#if roomOwner}}
+							<li>
+								<label>{{_ "Owner"}}</label>
+								<div>
+									<span>{{roomOwner}}</span>
+								</div>
+							</li>
+						{{/if}}
+						<li>
+							<label>{{_ "Topic"}}</label>
+							<div>
+								{{#if editing 'roomTopic'}}
+									<input type="text" name="roomTopic" value="{{roomTopic}}" class="content-background-color editing" />
+									<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+									<button type="button" class="button primary save">{{_ "Save"}}</button>
+								{{else}}
+									<span>{{{RocketChatMarkdown roomTopic}}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomTopic"></i>{{/if}}</span>
+								{{/if}}
+							</div>
+						</li>
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Type"}}</label>
+								<div>
+									{{#if editing 'roomType'}}
+										<label><input type="radio" name="roomType" class="editing" value="c" checked="{{$eq roomType 'c'}}" /> {{_ "Channel"}}</label>
+										<label><input type="radio" name="roomType" value="p" checked="{{$eq roomType 'p'}}" /> {{_ "Private_Group"}}</label>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span>{{roomTypeDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="roomType"></i>{{/if}}</span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Room_archivation_state"}}</label>
+								<div>
+									{{#if editing 'archivationState'}}
+										<label><input type="radio" name="archivationState" class="editing" value="true" checked="{{$eq archivationState true}}" /> {{_ "Room_archivation_state_true"}}</label>
+										<label><input type="radio" name="archivationState" value="false" checked="{{$neq archivationState true}}" /> {{_ "Room_archivation_state_false"}}</label>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span>{{archivationStateDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="archivationState"></i>{{/if}}</span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+						{{#if notDirect}}
+							<li>
+								<label>{{_ "Read_only_channel"}}</label>
+								<div>
+									{{#if editing 'readOnly'}}
+										<label><input type="radio" name="readOnly" class="editing" value="true" checked="{{$eq readOnly true}}" /> {{_ "True"}}</label>
+										<label><input type="radio" name="readOnly" value="false" checked="{{$neq readOnly true}}" /> {{_ "False"}}</label>
+										<button type="button" class="button cancel">{{_ "Cancel"}}</button>
+										<button type="button" class="button primary save">{{_ "Save"}}</button>
+									{{else}}
+										<span>{{readOnlyDescription}}{{#if canEdit}} <i class="icon-pencil" data-edit="readOnly"></i>{{/if}}</span>
+									{{/if}}
+								</div>
+							</li>
+						{{/if}}
+						{{#each channelSettings}}
+							{{> Template.dynamic template=template data=data}}
+						{{/each}}
+					</ul>
+				</form>
+				{{#if canDeleteRoom}}
+					<nav>
+						<button class='button danger delete'><span><i class='icon-trash'></i> {{_ "Delete"}}</span></button>
+					</nav>
+				{{/if}}
+			</div>
+		</section>
+	{{/with}}
+</template>

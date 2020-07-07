@@ -86,10 +86,11 @@ export const renderSVGLetters = (username, viewSize = 200) => {
 	return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 ${ viewSize } ${ viewSize }\">\n<rect width=\"100%\" height=\"100%\" fill=\"${ color }\"/>\n<text x=\"50%\" y=\"50%\" dy=\"0.36em\" text-anchor=\"middle\" pointer-events=\"none\" fill=\"#ffffff\" font-family=\"'Helvetica', 'Arial', 'Lucida Grande', 'sans-serif'\" font-size="${ fontSize }">\n${ initials }\n</text>\n</svg>`;
 };
 
-const getCacheTime = (cacheTime) => cacheTime || settings.get('Accounts_AvatarCacheTime');
+// const getCacheTime = (cacheTime) => cacheTime || settings.get('Accounts_AvatarCacheTime');
 
 export function setCacheAndDispositionHeaders(req, res) {
-	const cacheTime = getCacheTime(req.query.cacheTime);
+	// const cacheTime = getCacheTime(req.query.cacheTime);
+	const cacheTime = 0;
 	res.setHeader('Cache-Control', `public, max-age=${ cacheTime }`);
 	res.setHeader('Content-Disposition', 'inline');
 }

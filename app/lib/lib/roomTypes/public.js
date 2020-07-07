@@ -5,7 +5,7 @@ import { ChatRoom, ChatSubscription } from '../../../models';
 import { settings } from '../../../settings';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import { getUserPreference, RoomTypeConfig, RoomTypeRouteConfig, RoomSettingsEnum, UiTextContext, RoomMemberActions, roomTypes } from '../../../utils';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
+import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
 
 export class PublicRoomRoute extends RoomTypeRouteConfig {
 	constructor() {
@@ -138,7 +138,7 @@ export class PublicRoomType extends RoomTypeConfig {
 
 		// if room is not a discussion, returns the avatar for its name
 		if (!roomData.prid) {
-			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+			return getRoomAvatarURL(roomData.rid || roomData._id);
 		}
 
 		// if discussion's parent room is known, get his avatar

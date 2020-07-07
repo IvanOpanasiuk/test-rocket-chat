@@ -6,7 +6,6 @@ import { settings } from '../../../settings';
 import { hasAtLeastOnePermission, hasPermission } from '../../../authorization';
 import { getUserPreference, RoomSettingsEnum, RoomTypeConfig, RoomTypeRouteConfig, UiTextContext, roomTypes, RoomMemberActions } from '../../../utils';
 import { getRoomAvatarURL } from '../../../utils/lib/getRoomAvatarURL';
-import { getAvatarURL } from '../../../utils/lib/getAvatarURL';
 
 
 export class PrivateRoomRoute extends RoomTypeRouteConfig {
@@ -82,6 +81,8 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 	allowRoomSettingChange(room, setting) {
 		switch (setting) {
+			case RoomSettingsEnum.AVATAR:
+				return !room.prid;
 			case RoomSettingsEnum.JOIN_CODE:
 				return false;
 			case RoomSettingsEnum.BROADCAST:
@@ -127,7 +128,7 @@ export class PrivateRoomType extends RoomTypeConfig {
 
 		// if room is not a discussion, returns the avatar for its name
 		if (!roomData.prid) {
-			return getAvatarURL({ username: `@${ this.roomName(roomData) }` });
+			return getRoomAvatarURL(roomData.rid || roomData._id);
 		}
 
 		// if discussion's parent room is known, get his avatar

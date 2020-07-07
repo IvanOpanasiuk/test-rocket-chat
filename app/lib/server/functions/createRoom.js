@@ -6,12 +6,13 @@ import s from 'underscore.string';
 import { Apps } from '../../../apps/server';
 import { addUserRoles } from '../../../authorization';
 import { callbacks } from '../../../callbacks';
+import { setRoomAvatar } from './setRoomAvatar';
 import { Rooms, Subscriptions, Users } from '../../../models';
 import { getValidRoomName } from '../../../utils';
 import { createDirectRoom } from './createDirectRoom';
 
 
-export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}) {
+export const createRoom = function(type, name, owner, members = [], readOnly, extraData = {}, options = {}, avatar = null) {
 	callbacks.run('beforeCreateRoom', { type, name, owner, members, readOnly, extraData, options });
 
 	if (type === 'd') {
@@ -116,6 +117,11 @@ export const createRoom = function(type, name, owner, members = [], readOnly, ex
 	}
 
 	addUserRoles(owner._id, ['owner'], room._id);
+
+	if (avatar) {
+		const { blob, contentType, service } = avatar;
+		setRoomAvatar(room, blob, contentType, service);
+	}
 
 	if (type === 'c') {
 		Meteor.defer(() => {

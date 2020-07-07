@@ -18,13 +18,28 @@ Meteor.startup(function() {
 	});
 
 	MessageTypes.registerType({
+		id: 'room_changed_avatar',
+		system: true,
+		message: 'room_changed_avatar',
+		data(message) {
+			return {
+				user_by: message.u && message.u.username,
+			};
+		},
+	});
+
+
+	MessageTypes.registerType({
 		id: 'room_changed_topic',
 		system: true,
 		message: 'room_changed_topic',
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_topic: s.escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
+				room_announcement: s.escapeHTML(
+					message.msg || `(${ t('None').toLowerCase() })`,
+				),
+
 			};
 		},
 	});
@@ -48,7 +63,10 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_by: message.u && message.u.username,
-				room_description: s.escapeHTML(message.msg || `(${ t('None').toLowerCase() })`),
+				room_description: s.escapeHTML(
+					message.msg || `(${ t('None').toLowerCase() })`,
+				),
+
 			};
 		},
 	});
