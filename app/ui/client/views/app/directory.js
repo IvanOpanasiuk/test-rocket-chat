@@ -9,7 +9,6 @@ import { t, roomTypes } from '../../../../utils';
 import { settings } from '../../../../settings';
 import { hasAtLeastOnePermission } from '../../../../authorization';
 import './directory.html';
-import './directory.css';
 
 function directorySearch(config, cb) {
 	return Meteor.call('browseChannels', config, (err, result) => {
