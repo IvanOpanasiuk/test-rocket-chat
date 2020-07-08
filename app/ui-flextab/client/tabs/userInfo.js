@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
@@ -44,6 +45,7 @@ Template.userInfo.helpers({
 	customField() {
 		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
+		const { data } = Template.instance().extraFields.get();
 
 		if (sCustomFieldsToShow) {
 			const user = Template.instance().user.get();
@@ -67,6 +69,18 @@ Template.userInfo.helpers({
 				}
 			});
 		}
+		if (data) {
+			const dataArr = [];
+			for (const field of Object.keys(data[0])) {
+				dataArr.push({
+					label: field,
+					value: data[0][field],
+				});
+			}
+			return [...customFields, ...dataArr];
+		}
+
+
 		return customFields;
 	},
 	uid() {
@@ -268,6 +282,7 @@ Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
 	this.user = new ReactiveVar();
 	this.actions = new ReactiveVar();
+	this.extraFields = new ReactiveVar();
 
 	this.autorun(() => {
 		const user = this.user.get();
@@ -281,6 +296,15 @@ Template.userInfo.onCreated(function() {
 			directActions: this.data.showAll,
 		});
 		this.actions.set(actions);
+		if (user && user.emails) {
+			const { address } = user.emails[0];
+			Meteor.call('getExtraField', address, (err, result) => {
+				if (err) {
+					throw new Meteor.Error('Extra fields is epmty or profile-server has down');
+				}
+				this.extraFields.set(result);
+			});
+		}
 	});
 	this.editingUser = new ReactiveVar();
 	this.loadingUserInfo = new ReactiveVar(true);
