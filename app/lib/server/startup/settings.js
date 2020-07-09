@@ -752,6 +752,10 @@ settings.addGroup('OAuth', function() {
 });
 
 settings.addGroup('General', function() {
+	this.add('Service_account_key', '', {
+		type: 'string',
+		public: true,
+	});
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
