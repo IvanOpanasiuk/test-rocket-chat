@@ -1,61 +1,49 @@
-import { Meteor } from "meteor/meteor";
-import { ReactiveVar } from "meteor/reactive-var";
-import { Session } from "meteor/session";
-import { Template } from "meteor/templating";
-import { TAPi18n } from "meteor/rocketchat:tap-i18n";
-import _ from "underscore";
-import s from "underscore.string";
-import moment from "moment";
+import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
+import { Template } from 'meteor/templating';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import _ from 'underscore';
+import s from 'underscore.string';
+import moment from 'moment';
 
-import { DateFormat } from "../../../lib";
-import { popover } from "../../../ui-utils";
-import { templateVarHandler } from "../../../utils";
-import { RoomRoles, UserRoles, Roles } from "../../../models";
-import { settings } from "../../../settings";
-import { getActions } from "./userActions";
-import "./userInfo.html";
-import { APIClient } from "../../../utils/client";
-import { Markdown } from "../../../markdown/lib/markdown";
+import { DateFormat } from '../../../lib';
+import { popover } from '../../../ui-utils';
+import { templateVarHandler } from '../../../utils';
+import { RoomRoles, UserRoles, Roles } from '../../../models';
+import { settings } from '../../../settings';
+import { getActions } from './userActions';
+import './userInfo.html';
+import { APIClient } from '../../../utils/client';
+import { Markdown } from '../../../markdown/lib/markdown';
 
 const shownActionsCount = 2;
 
-const moreActions = function () {
-	return Template.instance()
-		.actions.get()
-		.map((action) =>
-			typeof action === "function" ? action.call(this) : action
-		)
-		.filter(
-			(action) => action && (!action.condition || action.condition.call(this))
-		)
-		.slice(shownActionsCount);
+const moreActions = function() {
+	return (
+		Template.instance().actions.get()
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)))
+			.slice(shownActionsCount)
+	);
 };
 
 Template.userInfo.helpers({
 	hideHeader() {
-		return ["Template.adminUserInfo", "adminUserInfo"].includes(
-			Template.parentData(2).viewName
-		);
+		return ['Template.adminUserInfo', 'adminUserInfo'].includes(Template.parentData(2).viewName);
 	},
 
 	moreActions,
 
 	actions() {
-		return Template.instance()
-			.actions.get()
-			.map((action) =>
-				typeof action === "function" ? action.call(this) : action
-			)
-			.filter(
-				(action) => action && (!action.condition || action.condition.call(this))
-			)
+		return Template.instance().actions.get()
+			.map((action) => (typeof action === 'function' ? action.call(this) : action))
+			.filter((action) => action && (!action.condition || action.condition.call(this)))
 			.slice(0, shownActionsCount);
 	},
 
 	customField() {
-		const sCustomFieldsToShow = settings
-			.get("Accounts_CustomFieldsToShowInUserInfo")
-			.trim();
+		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
 		const { data } = Template.instance().extraFields.get();
 
@@ -65,7 +53,7 @@ Template.userInfo.helpers({
 			const listOfCustomFieldsToShow = JSON.parse(sCustomFieldsToShow);
 
 			_.map(listOfCustomFieldsToShow, (el) => {
-				let content = "";
+				let content = '';
 				if (_.isObject(el)) {
 					_.map(el, (key, label) => {
 						const value = templateVarHandler(key, userCustomFields);
@@ -92,6 +80,7 @@ Template.userInfo.helpers({
 			return [...customFields, ...dataArr];
 		}
 
+
 		return customFields;
 	},
 	uid() {
@@ -100,7 +89,7 @@ Template.userInfo.helpers({
 	},
 	name() {
 		const user = Template.instance().user.get();
-		return user && user.name ? user.name : TAPi18n.__("Unnamed");
+		return user && user.name ? user.name : TAPi18n.__('Unnamed');
 	},
 
 	username() {
@@ -110,8 +99,8 @@ Template.userInfo.helpers({
 
 	userStatus() {
 		const user = Template.instance().user.get();
-		const userStatus = Session.get(`user_${user.username}_status`);
-		return userStatus || TAPi18n.__("offline");
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus || TAPi18n.__('offline');
 	},
 
 	userStatusText() {
@@ -120,8 +109,8 @@ Template.userInfo.helpers({
 		}
 
 		const user = Template.instance().user.get();
-		const userStatus = Session.get(`user_${user.username}_status`);
-		return userStatus || TAPi18n.__("offline");
+		const userStatus = Session.get(`user_${ user.username }_status`);
+		return userStatus || TAPi18n.__('offline');
 	},
 
 	email() {
@@ -133,7 +122,7 @@ Template.userInfo.helpers({
 		const user = Template.instance().user.get();
 		if (user && user.utcOffset != null) {
 			if (user.utcOffset > 0) {
-				return `+${user.utcOffset}`;
+				return `+${ user.utcOffset }`;
 			}
 			return user.utcOffset;
 		}
@@ -154,27 +143,20 @@ Template.userInfo.helpers({
 	},
 	linkedinUsername() {
 		const user = Template.instance().user.get();
-		if (
-			user &&
-			user.services &&
-			user.services.linkedin &&
-			user.services.linkedin.publicProfileUrl
-		) {
-			return s.strRight(user.services.linkedin.publicProfileUrl, "/in/");
+		if (user && user.services && user.services.linkedin && user.services.linkedin.publicProfileUrl) {
+			return s.strRight(user.services.linkedin.publicProfileUrl, '/in/');
 		}
 	},
 
 	servicesMeteor() {
 		const user = Template.instance().user.get();
-		return user && user.services && user.services["meteor-developer"];
+		return user && user.services && user.services['meteor-developer'];
 	},
 
 	userTime() {
 		const user = Template.instance().user.get();
 		if (user && user.utcOffset != null) {
-			return DateFormat.formatTime(
-				Template.instance().now.get().utcOffset(user.utcOffset)
-			);
+			return DateFormat.formatTime(Template.instance().now.get().utcOffset(user.utcOffset));
 		}
 	},
 
@@ -235,39 +217,25 @@ Template.userInfo.helpers({
 			return;
 		}
 		const userRoles = UserRoles.findOne(user._id) || {};
-		const roomRoles =
-			RoomRoles.findOne({
-				"u._id": user._id,
-				rid: Session.get("openedRoom"),
-			}) || {};
+		const roomRoles = RoomRoles.findOne({ 'u._id': user._id, rid: Session.get('openedRoom') }) || {};
 		const roles = _.union(userRoles.roles || [], roomRoles.roles || []);
-		return (
-			roles.length &&
-			Roles.find(
-				{ _id: { $in: roles }, description: { $exists: 1 } },
-				{ fields: { description: 1 } }
-			)
-		);
+		return roles.length && Roles.find({ _id: { $in: roles }, description: { $exists: 1 } }, { fields: { description: 1 } });
 	},
 
 	shouldDisplayReason() {
 		const user = Template.instance().user.get();
-		return (
-			settings.get("Accounts_ManuallyApproveNewUsers") &&
-			user.active === false &&
-			user.reason
-		);
+		return settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
 	},
 });
 
 Template.userInfo.events({
-	"click .js-more"(e, instance) {
+	'click .js-more'(e, instance) {
 		const actions = moreActions.call(this);
 		const groups = [];
 		const columns = [];
-		const admin = actions.filter((actions) => actions.group === "admin");
+		const admin = actions.filter((actions) => actions.group === 'admin');
 		const others = actions.filter((action) => !action.group);
-		const channel = actions.filter((actions) => actions.group === "channel");
+		const channel = actions.filter((actions) => actions.group === 'channel');
 		if (others.length) {
 			groups.push({ items: others });
 		}
@@ -295,25 +263,22 @@ Template.userInfo.events({
 		};
 		popover.open(config);
 	},
-	"click .js-action"(e) {
-		return (
-			this.action &&
-			this.action.apply(this, [e, { instance: Template.instance() }])
-		);
+	'click .js-action'(e) {
+		return this.action && this.action.apply(this, [e, { instance: Template.instance() }]);
 	},
-	"click .js-close-info"(e, instance) {
+	'click .js-close-info'(e, instance) {
 		return instance.clear();
 	},
-	"click .js-close"(e, instance) {
+	'click .js-close'(e, instance) {
 		return instance.clear();
 	},
 
-	"click .js-back"(e, instance) {
+	'click .js-back'(e, instance) {
 		return instance.clear();
 	},
 });
 
-Template.userInfo.onCreated(function () {
+Template.userInfo.onCreated(function() {
 	this.now = new ReactiveVar(moment());
 	this.user = new ReactiveVar();
 	this.actions = new ReactiveVar();
@@ -333,11 +298,9 @@ Template.userInfo.onCreated(function () {
 		this.actions.set(actions);
 		if (user && user.emails) {
 			const { address } = user.emails[0];
-			Meteor.call("getExtraField", address, (err, result) => {
+			Meteor.call('getExtraField', address, (err, result) => {
 				if (err) {
-					throw new Meteor.Error(
-						"Extra fields is epmty or profile-server has down"
-					);
+					throw new Meteor.Error('Extra fields is epmty or profile-server has down');
 				}
 				this.extraFields.set(result);
 			});
@@ -361,7 +324,7 @@ Template.userInfo.onCreated(function () {
 			return;
 		}
 
-		const { user } = await APIClient.v1.get("users.info", params);
+		const { user } = await APIClient.v1.get('users.info', params);
 		this.user.set(user);
 		this.loadingUserInfo.set(false);
 	};
@@ -383,6 +346,6 @@ Template.userInfo.onCreated(function () {
 	});
 });
 
-Template.userInfo.onDestroyed(function () {
+Template.userInfo.onDestroyed(function() {
 	clearInterval(this.nowInterval);
 });
