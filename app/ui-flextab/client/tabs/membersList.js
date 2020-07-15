@@ -134,6 +134,12 @@ Template.membersList.helpers({
 		const { user: { username, avatarETag } } = this;
 		return getUserAvatarURL(username, avatarETag);
 	},
+	vacation() {
+		const { user: { vacation } } = this;
+		if (vacation) {
+			return Object.keys(vacation).length;
+		}
+	},
 });
 
 Template.membersList.events({

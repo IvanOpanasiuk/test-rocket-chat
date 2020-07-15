@@ -38,6 +38,11 @@
 
 							<div class="sidebar-item__ellipsis">
 								{{name}}
+								{{#if $eq t "d"}}
+									{{#if isVacation}}
+										<span>🌴</span>
+									{{/if}}
+								{{/if}}
 								{{#if mySelf}}
 									<span class="sidebar-item__me">({{_ "You"}})</span>
 								{{/if}}

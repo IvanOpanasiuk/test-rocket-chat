@@ -45,8 +45,10 @@ Template.userInfo.helpers({
 	customField() {
 		const sCustomFieldsToShow = settings.get('Accounts_CustomFieldsToShowInUserInfo').trim();
 		const customFields = [];
-		const { data } = Template.instance().extraFields.get();
-
+		let data;
+		if (Template.instance().extraFields.get()) {
+			data = Template.instance().extraFields.get().data;
+		}
 		if (sCustomFieldsToShow) {
 			const user = Template.instance().user.get();
 			const userCustomFields = (user && user.customFields) || {};

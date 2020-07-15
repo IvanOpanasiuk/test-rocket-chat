@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
+import { Tracker } from 'meteor/tracker';
 
 import { t, getUserPreference, roomTypes } from '../../utils';
 import { popover, renderMessageBody, menu } from '../../ui-utils';
@@ -69,6 +70,12 @@ Template.sidebarItem.helpers({
 			return 'badge';
 		}
 	},
+	isVacation() {
+		if (Template.instance().vacationFields.get()) {
+			const { vacation } = Template.instance().vacationFields.get().data[0];
+			return !!Object.keys(vacation).length;
+		}
+	},
 });
 
 function setLastMessageTs(instance, ts) {
@@ -85,12 +92,22 @@ function setLastMessageTs(instance, ts) {
 
 Template.sidebarItem.onCreated(function() {
 	this.user = Users.findOne(Meteor.userId(), { fields: { username: 1 } });
-
 	this.lastMessageTs = new ReactiveVar();
+	this.vacationFields = new ReactiveVar(null);
+
+	Tracker.autorun(() => {
+		if (this.data.t === 'd' && this.data.rid) {
+			Meteor.call('getVacantion', this.data.rid, (err, result) => {
+				if (err) {
+					throw new Meteor.Error('Vacation fields is epmty or profile-server has down');
+				}
+				this.vacationFields.set(result);
+			});
+		}
+	});
 
 	this.autorun(() => {
 		const currentData = Template.currentData();
-
 		if (!currentData.lastMessage || getUserPreference(Meteor.userId(), 'sidebarViewMode') !== 'extended') {
 			return clearInterval(this.timeAgoInterval);
 		}
